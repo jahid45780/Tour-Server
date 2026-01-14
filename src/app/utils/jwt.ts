@@ -8,6 +8,6 @@ import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 }
 
   export const verifyToken = (token:string, secret:string)=>{
-     const verifyToken = jwt.sign(token, secret)
+     const verifyToken = jwt.verify(token, secret)
      return verifyToken
 }

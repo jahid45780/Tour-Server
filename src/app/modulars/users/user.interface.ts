@@ -2,8 +2,10 @@ import { Types } from "mongoose";
 
 export enum Role {
     ADMIN = "ADMIN",
+    SUPER_ADMIN = "SUPER_ADMIN",
     USER = "USER",
-    GUIDE = "GUIDE"
+    GUIDE = "GUIDE",
+    includes = "includes"
 }
 
 export interface IAuthProvider {
