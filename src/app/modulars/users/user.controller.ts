@@ -18,6 +18,7 @@ const createUser = catchAsync (async  (req:Request, res:Response, next:NextFunct
   const user  = await userService.createUser(req.body)
 
 
+
     sentResponse(res,{
       success:true,
       statusCode:httpStatus.CREATED,
@@ -46,8 +47,9 @@ const getAllUsers = catchAsync(async(req:Request, res:Response, next:NextFunctio
 const updateUser = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
   
   const userId = req.params.id
-  const token = req.headers.authorization
-  const verifiedToken = verifyToken(token as string, envVers.BCRYPT_SALT_ROUND) as JwtPayload
+  const verifiedToken = req.user
+  // const token = req.headers.authorization
+  // const verifiedToken = verifyToken(token as string, envVers.BCRYPT_SALT_ROUND) as JwtPayload
    const payload = req.body
    const user  =  await userService.updateUser(userId, payload, verifiedToken)
   
