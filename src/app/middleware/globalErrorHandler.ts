@@ -11,7 +11,31 @@ export const globalErrorHandler = (err:any, req:Request, res:Response, next:Next
     let statusCode = 500;
     let message = 'something went wrong'
 
-    if(err instanceof AppError){
+    const errorSources: { path: string; message: string }[] = [];
+
+   if(err.code === 11000){
+      const matchedArray = err.message.match(/"([^"]*)"/);
+      statusCode = 400;
+      message =`${matchedArray[1]} already existed!! `
+   }
+
+   else if(err.name === "ZodError"){
+      statusCode = 400;
+      message = "Zod Error"
+    err.issues.forEach((issue: any) => {
+    errorSources.push({
+      path: issue.path[issue.path.length - 1],
+      message: issue.message,
+    });
+  });
+   }
+
+   else if(err.name === "CastError"){
+    statusCode = 400
+    message = "Invalid  mongoDB objectID  please provided valid id"
+   }
+
+  else if(err instanceof AppError){
         statusCode = err.statusCode
         message = err.message
 
