@@ -5,6 +5,10 @@ import httpStatus from "http-status-codes"
 import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sentResponse } from "../../utils/sendResponse";
+import { verifyToken } from "../../utils/jwt";
+import { envVers } from "../../config/env";
+import { JwtPayload } from 'jsonwebtoken';
+
 
 
 
@@ -13,10 +17,7 @@ import { sentResponse } from "../../utils/sendResponse";
 const createUser = catchAsync (async  (req:Request, res:Response, next:NextFunction)=>{
   const user  = await userService.createUser(req.body)
 
-  //  res.status(httpStatus.CREATED).json({
-  //         message:"successfully create user",
-  //          user
-  //       })
+
 
     sentResponse(res,{
       success:true,
@@ -29,35 +30,6 @@ const createUser = catchAsync (async  (req:Request, res:Response, next:NextFunct
 
 })
 
-
-// const createUser = async (req:Request, res:Response, next:NextFunction)=>{
-//       try {
-
-//         const user  = await userService.createUser(req.body)
-
-    
-//         res.status(httpStatus.CREATED).json({
-//             message:"successfully create user",
-//             user
-//         })
-        
-//       } catch (err:any) {
-
-//         console.log(err);
-//         next(err)
-        
-//       }
-// }
-
-// const getUsers = async (req:Request, res:Response, next:NextFunction)=>{
-//     try {
-//       const users = await userService.getUsers
-//       return users
-//     } catch (err) {
-//       console.log(err);
-//       next(err)
-//     }
-// }
 
 const getAllUsers = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
   const result = await userService.getUsers()
@@ -72,10 +44,30 @@ const getAllUsers = catchAsync(async(req:Request, res:Response, next:NextFunctio
 
 })
 
+const updateUser = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
+  
+  const userId = req.params.id
+  const verifiedToken = req.user
+  // const token = req.headers.authorization
+  // const verifiedToken = verifyToken(token as string, envVers.BCRYPT_SALT_ROUND) as JwtPayload
+   const payload = req.body
+   const user  =  await userService.updateUser(userId, payload, verifiedToken as JwtPayload )
+  
+
+  sentResponse(res,{
+    success:true,
+    statusCode:httpStatus.OK,
+    message:"successfully update users",
+    data:user 
+  })
+
+})
+
 
 
 
  export const userController = {
     createUser,
-    getAllUsers
+    getAllUsers,
+    updateUser
 }

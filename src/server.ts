@@ -3,6 +3,7 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVers } from "./app/config/env";
+import { seedSupperAdmin } from "./app/utils/seedSupperAdmin";
 
 
 
@@ -30,7 +31,12 @@ const startServer = async ()=>{
 
 }
 
-startServer()
+
+(async()=>{
+ await startServer()
+ await seedSupperAdmin()
+})()
+
 
 process.on("SIGINT",()=>{
      console.log("SIGINT detected ... server shutting down",);
