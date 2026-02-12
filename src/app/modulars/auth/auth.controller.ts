@@ -12,56 +12,92 @@ import { createUserToken } from "../../utils/userTokens";
 import { envVers } from "../../config/env";
 import passport from "passport";
 
-const credentialsLogin = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
+// const credentialsLogin = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
   
 
-      passport.authenticate( "local", async (err:any, user:any, info:any)=>{
+//       passport.authenticate( "local", async (err:any, user:any, info:any)=>{
 
 
-        if(err){
-         return next( new AppError (401, err) )
-        }
+//         if(err){
+//          return next( new AppError (401, err) )
+//         }
 
-        if(!user){
-          // return next("user  does not exited")
-          return next( new AppError (401, info.message) )
-        }
+//         if(!user){
+//           // return next("user  does not exited")
+//           return next( new AppError (401, info.message) )
+//         }
 
-    const userTokens = await createUserToken(user)
+//     const userTokens = await createUserToken(user)
 
-    const { password: pass, ...res } = user.toObject()
+//     const { password: pass, ...res } = user.toObject()
 
      
 
-   setAuthCookie(res, userTokens)
+//    setAuthCookie(res, userTokens)
 
-  sentResponse(res,{
-    success:true,
-    statusCode:httpStatue.OK,
-    message:"successfully logging user",
-    data:{
-      accessTokens: userTokens.accessToken,
-      refreshTokens: userTokens.refreshToken,
-      user:res
+//   sentResponse(res,{
+//     success:true,
+//     statusCode:httpStatue.OK,
+//     message:"successfully logging user",
+//     data:{
+//       accessTokens: userTokens.accessToken,
+//       refreshTokens: userTokens.refreshToken,
+//       user:res
+//     }
+   
+//   })
+
+//       })(req,res,next)
+
+//   //  const loginInfo = await authService.credentialsLogin(req.body)
+
+//   //  setAuthCookie(res, loginInfo)
+
+//   // sentResponse(res,{
+//   //   success:true,
+//   //   statusCode:httpStatue.OK,
+//   //   message:"successfully logging user",
+//   //   data:loginInfo
+   
+//   // })
+
+// })
+
+const credentialsLogin = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+  
+  passport.authenticate("local", async (err: any, user: any, info: any) => {
+
+    if (err) {
+      return next(new AppError(401, err));
     }
-   
-  })
 
-      })(req,res,next)
+    if (!user) {
+      return next(new AppError(401, info.message));
+    }
 
-  //  const loginInfo = await authService.credentialsLogin(req.body)
+    const userTokens = await createUserToken(user);
 
-  //  setAuthCookie(res, loginInfo)
+    // user object থেকে password বাদ দিচ্ছি
+    const { password, ...userData } = user.toObject();
 
-  // sentResponse(res,{
-  //   success:true,
-  //   statusCode:httpStatue.OK,
-  //   message:"successfully logging user",
-  //   data:loginInfo
-   
-  // })
+    // এখানে res হচ্ছে Express Response object 
+    await setAuthCookie(res, userTokens);
 
-})
+    sentResponse(res, {
+      success: true,
+      statusCode: httpStatue.OK,
+      message: "Successfully logged in user",
+      data: {
+        accessTokens: userTokens.accessToken,
+        refreshTokens: userTokens.refreshToken,
+        user: userData
+      }
+    });
+
+  })(req, res, next);
+
+});
+
 
 
 const getNewAccessToken = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{

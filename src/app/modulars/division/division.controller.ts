@@ -16,6 +16,56 @@ const createDivision = catchAsync( async (req: Request, res: Response) => {
     });
 });
 
+
+const getAllDivisions = catchAsync(async (req:Request, res:Response)=>{
+    const result = await DivisionService.getAllDivisions()
+     
+    sentResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Divisions retrieved",
+        data: result.data,
+        meta: result.meta,
+    });
+})
+
+const getSingleDivision = catchAsync(async(req:Request, res:Response)=>{
+    const slug = req.params.slug;
+    const result = await DivisionService.getSingleDivision(slug);
+    sentResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Divisions retrieved",
+        data: result.data,
+    });
+})
+
+const updateDivision = catchAsync(async(req:Request, res:Response)=>{
+      const id  = req.params.id;
+      const result = await DivisionService.updateDivision(id, req.body)
+
+       sentResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Division deleted",
+        data: result,
+    });
+})
+
+const deleteDivision = catchAsync(async (req:Request, res:Response)=>{
+    const result = await DivisionService.deleteDivision(req.params.id);
+     sentResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Division deleted",
+        data: result,
+    });
+})
+
 export const DivisionController = {
-    createDivision
+    createDivision,
+    getAllDivisions,
+    getSingleDivision,
+    updateDivision,
+    deleteDivision
 }
