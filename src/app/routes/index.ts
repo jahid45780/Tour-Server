@@ -2,6 +2,7 @@ import { Router } from "express";
 import { userRouter } from "../modulars/users/user.route";
 import { AuthRouter } from "../modulars/auth/auth.route";
 import { DivisionRoutes } from "../modulars/division/division.route";
+import { TourRoutes } from "../modulars/tour/tour.route";
 
 
 
@@ -19,6 +20,10 @@ import { DivisionRoutes } from "../modulars/division/division.route";
     {
       path:'/division',
       route:DivisionRoutes
+    },
+    {
+      path:'/tour',
+      route:TourRoutes
     }
     
  ]
