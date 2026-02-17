@@ -12,7 +12,7 @@ export const TourType = model <ITourType>("TourType", TourTypeSchema)
 const TourSchema = new Schema<ITour>(
   {
     title: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
+    slug: { type: String, unique: true },
 
     descriptions: { type: String },
 
@@ -75,7 +75,7 @@ TourSchema.pre("findOneAndUpdate", async function () {
 
         let counter = 0;
         while (await Tour.exists({ slug })) {
-            slug = `${slug}-${counter++}` // dhaka-division-2
+            slug = `${slug}-${counter++}` 
         }
 
         tour.slug = slug

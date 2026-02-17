@@ -11,18 +11,6 @@ import { Division } from "./division.model";
     if(existingDivision){
         throw new AppError( 200, "A division with this name already exist")
     }
-
-    const baseSlug = payload.name.toLowerCase().split(" ").join("-")
-    let slug = `${baseSlug}-division`
-
-    let counter = 0;
-    while (await Division.exists({ slug })) {
-        slug = `${slug}-${counter++}` 
-    }
-
-    payload.slug = slug;
-
-
     const division = await Division.create(payload)
     return division
 
@@ -62,20 +50,7 @@ import { Division } from "./division.model";
      if(duplicateDivision){
         throw new AppError(409, "A division with this name already exists")
      }
-   
-        if (payload.name) {
-        const baseSlug = payload.name.toLowerCase().split(" ").join("-")
-        let slug = `${baseSlug}-division`
-
-        let counter = 0;
-        while (await Division.exists({ slug })) {
-            slug = `${slug}-${counter++}` // dhaka-division-2
-        }
-
-        payload.slug = slug
-    }
-
-    const updatedDivision = await Division.findByIdAndUpdate(id, payload,{new:true, runValidators:true})
+   const updatedDivision = await Division.findByIdAndUpdate(id, payload,{new:true, runValidators:true})
 
     return updatedDivision
 

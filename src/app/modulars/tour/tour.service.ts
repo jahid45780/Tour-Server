@@ -1,6 +1,6 @@
 import AppError from "../../errorHerplrs/appError";
-import { QueryBuilder } from "../../utils/QueryBuilder";
-import { tourSearchableFields } from "./tour.constant";
+// import { QueryBuilder } from "../../utils/QueryBuilder";
+// import { tourSearchableFields } from "./tour.constant";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
 
@@ -14,46 +14,48 @@ const createTour = async(payload:ITour)=>{
    if(existingTour){
     throw new AppError(409,"A tour with this title already exists.")
    }
-
-    const baseSlug = payload.title.toLowerCase().split(" ").join("-")
-    let slug = `${baseSlug}`
-
-    let counter = 0;
-    while (await Tour.exists({ slug })) {
-        slug = `${slug}-${counter++}` 
-    }
-
-    payload.slug = slug;
  
     const tour = await Tour.create(payload)
 
     return tour
 }
 
+// const getAllTours = async(query: Record<string, string>)=>{
+//      const queryBuilder = new QueryBuilder(Tour.find(), query)
+
+//     const tours = await queryBuilder
+//         .search(tourSearchableFields)
+//         .filter()
+//         .sort()
+//         .fields()
+//         .paginate()
+
+//     // const meta = await queryBuilder.getMeta()
+
+//     const [data, meta] = await Promise.all([
+//         tours.build(),
+//         queryBuilder.getMeta()
+//     ])
+
+
+//     return {
+//         data,
+//         meta
+//     }
+// };
+
 const getAllTours = async(query: Record<string, string>)=>{
-     const queryBuilder = new QueryBuilder(Tour.find(), query)
+    const filter = query
+    const tour  = await Tour.find(filter)
+    const totalTours = await Tour.countDocuments()
 
-    const tours = await queryBuilder
-        .search(tourSearchableFields)
-        .filter()
-        .sort()
-        .fields()
-        .paginate()
-
-    // const meta = await queryBuilder.getMeta()
-
-    const [data, meta] = await Promise.all([
-        tours.build(),
-        queryBuilder.getMeta()
-    ])
-
-
-    return {
-        data,
-        meta
+    return{
+        data:tour,
+        meta:{
+            total:totalTours
+        }
     }
-};
-
+}
 
 const updateTour = async (id: string, payload: Partial<ITour>) => {
 
@@ -62,18 +64,6 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     if (!existingTour) {
         throw new Error("Tour not found.");
     }
-
-    // if (payload.title) {
-    //     const baseSlug = payload.title.toLowerCase().split(" ").join("-")
-    //     let slug = `${baseSlug}`
-
-    //     let counter = 0;
-    //     while (await Tour.exists({ slug })) {
-    //         slug = `${slug}-${counter++}` // dhaka-division-2
-    //     }
-
-    //     payload.slug = slug
-    // }
 
     const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true });
 
