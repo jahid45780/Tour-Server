@@ -37,7 +37,7 @@ divisionSchema.pre("findOneAndUpdate", async function () {
 
         let counter = 0;
         while (await Division.exists({ slug })) {
-            slug = `${slug}-${counter++}` // dhaka-division-2
+            slug = `${slug}-${counter++}`
         }
 
         division.slug = slug

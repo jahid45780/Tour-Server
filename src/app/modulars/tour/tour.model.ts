@@ -53,11 +53,11 @@ TourSchema.pre("save", async function () {
 
     if (this.isModified("title")) {
         const baseSlug = this.title.toLowerCase().split(" ").join("-")
-        let slug = `${baseSlug}`
+        let slug = `${baseSlug}-tour`
 
         let counter = 0;
         while (await Tour.exists({ slug })) {
-            slug = `${slug}-${counter++}` // dhaka-division-2
+            slug = `${slug}-${counter++}` 
         }
 
         this.slug = slug;
@@ -70,7 +70,7 @@ TourSchema.pre("findOneAndUpdate", async function () {
 
     if (tour.title) {
         const baseSlug = tour.title.toLowerCase().split(" ").join("-")
-        let slug = `${baseSlug}`
+        let slug = `${baseSlug}-tour`
 
 
         let counter = 0;

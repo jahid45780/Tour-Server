@@ -1,6 +1,6 @@
 import AppError from "../../errorHerplrs/appError";
 // import { QueryBuilder } from "../../utils/QueryBuilder";
-// import { tourSearchableFields } from "./tour.constant";
+import { tourSearchableFields } from "./tour.constant";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
 
@@ -46,7 +46,15 @@ const createTour = async(payload:ITour)=>{
 
 const getAllTours = async(query: Record<string, string>)=>{
     const filter = query
-    const tour  = await Tour.find(filter)
+    const searchTerm = query.searchTerm || "" ;
+    
+    delete filter['searchTerm']
+    
+    const searchQuery = {
+        $or:tourSearchableFields.map(filed=>({[filed]:{$regex:searchTerm, options:"i"}}))
+    }
+
+    const tour  = await Tour.find(searchQuery).find(filter);
     const totalTours = await Tour.countDocuments()
 
     return{
