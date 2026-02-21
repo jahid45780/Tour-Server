@@ -1,3 +1,4 @@
+import { excludeField } from "../../../constants";
 import AppError from "../../errorHerplrs/appError";
 // import { QueryBuilder } from "../../utils/QueryBuilder";
 import { tourSearchableFields } from "./tour.constant";
@@ -47,20 +48,39 @@ const createTour = async(payload:ITour)=>{
 const getAllTours = async(query: Record<string, string>)=>{
     const filter = query
     const searchTerm = query.searchTerm || "" ;
-    
-    delete filter['searchTerm']
+    const sort = query.sort || "-createdAt";
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 1;
+
+    const skip = (page -1) * limit
+
+    const fields = query.fields?.split(",").join(" ") || ""; 
+
+    for(const field of excludeField){
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete filter[field]
+    }
     
     const searchQuery = {
-        $or:tourSearchableFields.map(filed=>({[filed]:{$regex:searchTerm, options:"i"}}))
+        $or:tourSearchableFields.map(filed=>({[filed]:{$regex:searchTerm, $options:"i"}}))
     }
 
-    const tour  = await Tour.find(searchQuery).find(filter);
+    const tour  = await Tour.find(searchQuery).find(filter).sort(sort).select(fields).skip(skip).limit(limit);
     const totalTours = await Tour.countDocuments()
+
+    const totalPage = Math.ceil(totalTours / limit)
+
+   const meta ={
+      page:page,
+      limit:limit,
+      total:totalTours,
+      totalPage:totalPage
+   }
 
     return{
         data:tour,
         meta:{
-            total:totalTours
+            total:meta
         }
     }
 }
