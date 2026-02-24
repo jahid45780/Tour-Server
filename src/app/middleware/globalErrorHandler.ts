@@ -13,13 +13,13 @@ export const globalErrorHandler = (err:any, req:Request, res:Response, next:Next
 
     const errorSources: { path: string; message: string }[] = [];
 
-   if(err.code === 11000){
-      const matchedArray = err.message.match(/"([^"]*)"/);
-      statusCode = 400;
-      message =`${matchedArray[1]} already existed!! `
-   }
+//    if(err.code === 11000){
+//       const matchedArray = err.message.match(/"([^"]*)"/);
+//       statusCode = 400;
+//       message =`${matchedArray[1]} already existed!! `
+//    }
 
-   else if(err.name === "ZodError"){
+   if(err.name === "ZodError"){
       statusCode = 400;
       message = "Zod Error"
     err.issues.forEach((issue: any) => {
