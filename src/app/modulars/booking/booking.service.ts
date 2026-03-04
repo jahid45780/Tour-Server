@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errorHerplrs/appError";
 import { Tour } from "../tour/tour.model";
 import { User } from "../users/user.model";
@@ -6,6 +7,8 @@ import  httpStatue  from 'http-status-codes';
 import { Booking } from "./booking.model";
 import { Payment } from "../payments/payment.model";
 import { PAYMENT_STATUS } from "../payments/payment.interface";
+import { SSLCommerz } from "../sslCommerz/sslCommerz.interface";
+import { SSLService } from "../sslCommerz/sslCommerz.service";
 
 
 
@@ -55,9 +58,32 @@ const createBooking = async(payload:Partial<IBooking>, userId:string)=>{
    ).populate("user", "name email phone address")
     .populate("tour", "title costFrom")
     .populate("payment")
+
+    const userAddress = (updateBooking?.user as any).address
+    const userEmail = (updateBooking?.user as any).email
+    const userPhone = (updateBooking?.user as any).phone
+    const userName = (updateBooking?.user as any).name
+
+
+   const sslPayload: SSLCommerz = {
+       
+    address:userAddress,
+    email:userEmail,
+    phoneNumber:userPhone,
+    name:userName,
+    amount:amount,
+    transactionId:transactionId
+
+   }
+
+   const sslPayment = await SSLService.sslPaymentInit(sslPayload)
+
     await session.commitTransaction()
     session.endSession()
-   return updateBooking
+   return {
+    payment:sslPayment,
+    booking:updateBooking
+   }
       
     } catch (error) {
       await session.abortTransaction()
