@@ -4,6 +4,7 @@ import { AuthRouter } from "../modulars/auth/auth.route";
 import { DivisionRoutes } from "../modulars/division/division.route";
 import { TourRoutes } from "../modulars/tour/tour.route";
 import { BookingRoutes } from "../modulars/booking/booking.route";
+import { paymentRouter } from "../modulars/payments/payment.route";
 
 
 
@@ -29,6 +30,10 @@ import { BookingRoutes } from "../modulars/booking/booking.route";
     {
       path:'/booking',
       route:BookingRoutes
+    },
+    {
+      path:'/payment',
+      route:paymentRouter
     }
     
  ]
