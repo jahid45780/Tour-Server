@@ -18,7 +18,8 @@ router.get('/', DivisionController.getAllDivisions)
 
 router.get('/:slug',DivisionController.getSingleDivision)
 
-router.post('/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN),  
+router.patch('/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN),  
+multerUpload.single("file"),
 validateRequest(updateDivisionSchema),
 DivisionController.updateDivision)
 
