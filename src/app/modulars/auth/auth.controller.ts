@@ -11,6 +11,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { createUserToken } from "../../utils/userTokens";
 import { envVers } from "../../config/env";
 import passport from "passport";
+import  httpStatus  from 'http-status-codes';
 
 // const credentialsLogin = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
   
@@ -162,6 +163,41 @@ const resetPassword = catchAsync(async (req:Request, res:Response, next:NextFunc
   })
 })
 
+const setPassword = catchAsync(async (req:Request, res:Response, next:NextFunction)=>{
+  
+  
+  const decodedToken = req.user as JwtPayload
+  const {password} = req.body;
+
+  await authService.setPassword(decodedToken.userId, password)
+  
+  sentResponse(res,{
+    success:true,
+    statusCode:httpStatue.OK,
+    message:" password  changed successfully",
+    data:null
+   
+  })
+})
+
+const changePassword = catchAsync(async (req:Request, res:Response, next:NextFunction)=>{
+  
+  
+  const { oldPassword, newPassword } = req.body;
+  const decodedToken = req.user;
+ 
+  await authService.resetPassword(oldPassword, newPassword, decodedToken as JwtPayload)
+  
+  sentResponse(res,{
+    success:true,
+    statusCode:httpStatue.OK,
+    message:" password change successfully",
+    data:null
+   
+  })
+})
+
+
 const googleCallbackController = catchAsync(async (req:Request, res:Response, next:NextFunction)=>{
   
   let redirectTo = req.query.state ? req.query.state as string : ""
@@ -179,15 +215,21 @@ const googleCallbackController = catchAsync(async (req:Request, res:Response, ne
 
   setAuthCookie(res, TokenInfo)
 
-  res.redirect(`${envVers.FRONTEND_URL} / ${redirectTo}`)
+  res.redirect(`${envVers.FRONTEND_URL}/${redirectTo}`)
   
  
 })
+
+
+
+
 
 export const authController ={
     credentialsLogin,
     getNewAccessToken,
     logout,
+    changePassword,
+    setPassword,
     resetPassword,
     googleCallbackController
 }

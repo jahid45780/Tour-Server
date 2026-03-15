@@ -10,10 +10,19 @@ router.post('/login',authController.credentialsLogin)
 router.post('/refresh-token',authController.getNewAccessToken)
 router.post('/logout',authController.logout)
 router.post('/reset-password', checkAuth(...Object.values(Role)), authController.resetPassword)
+router.post('/change-password', checkAuth(...Object.values(Role)), authController.changePassword)
+router.post('/set-password', checkAuth(...Object.values(Role)), authController.setPassword)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-router.get('/google', async (req:Request, res:Response, next:NextFunction)=>{
-    const redirect = req.params.redirect || '/'
-    passport.authenticate("google", {scope:["profile", "email"], state:redirect as string })(req, res, next)
+
+router.get("/google", (req: Request, res: Response, next: NextFunction) => {
+
+  const redirect = req.query.redirect || "/"
+
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state: redirect as string
+  })(req, res, next)
+
 })
 
 router.get("/google/callback", passport.authenticate("google", {failureRedirect:"/login"}),  authController.googleCallbackController)
