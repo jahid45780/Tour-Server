@@ -200,6 +200,7 @@ const changePassword = catchAsync(async (req:Request, res:Response, next:NextFun
 
 const googleCallbackController = catchAsync(async (req:Request, res:Response, next:NextFunction)=>{
   
+
   let redirectTo = req.query.state ? req.query.state as string : ""
 
   if(redirectTo.startsWith('/')){
@@ -215,7 +216,7 @@ const googleCallbackController = catchAsync(async (req:Request, res:Response, ne
 
   setAuthCookie(res, TokenInfo)
 
-  res.redirect(`${envVers.FRONTEND_URL}/${redirectTo}`)
+ res.redirect(`${envVers.FRONTEND_URL}/${redirectTo}`)
   
  
 })
