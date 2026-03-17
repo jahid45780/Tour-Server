@@ -12,6 +12,7 @@ router.post('/logout',authController.logout)
 router.post('/reset-password', checkAuth(...Object.values(Role)), authController.resetPassword)
 router.post('/change-password', checkAuth(...Object.values(Role)), authController.changePassword)
 router.post('/set-password', checkAuth(...Object.values(Role)), authController.setPassword)
+router.post('/forgot-password', authController.forgotPassword)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 router.get("/google", (req: Request, res: Response, next: NextFunction) => {
