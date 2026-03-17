@@ -1,4 +1,5 @@
 
+import { deleteImageFromCLoudinary } from "../../config/cloudinary.config";
 import AppError from "../../errorHerplrs/appError";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
@@ -51,6 +52,10 @@ import { Division } from "./division.model";
         throw new AppError(409, "A division with this name already exists")
      }
    const updatedDivision = await Division.findByIdAndUpdate(id, payload,{new:true, runValidators:true})
+
+    if (payload.thumbnail && existingDivision.thumbnail) {
+        await deleteImageFromCLoudinary(existingDivision.thumbnail)
+    }
 
     return updatedDivision
 

@@ -4,6 +4,7 @@ import { checkAuth } from "../auth/authCheck"
 import { Role } from "../users/user.interface"
 import { validateRequest } from "../../middleware/validateRequest"
 import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema} from "./tour.validation"
+import { multerUpload } from "../../config/multer.config"
 
 
 
@@ -26,6 +27,7 @@ router.delete('/tour-types/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), TourCo
 /* --------------------- TOUR ROUTES ---------------------- */
 
 router.post('/create', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), 
+multerUpload.array("files"),
 validateRequest(createTourZodSchema),
 TourController.createTour)
 
@@ -34,6 +36,7 @@ router.get('/', TourController.getAllTours)
 router.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.array("files"),
     validateRequest(updateTourZodSchema),
     TourController.updateTour
 );
