@@ -52,7 +52,14 @@ interface envConfig{
         SMTP_FROM: string;
     };
 
-
+    // redis otp
+    REDIS: {
+    REDIS_HOST:string;
+    REDIS_PORT:string;
+    REDIS_USERNAME:string;
+    REDIS_PASSWORD:string
+    }
+   
 }
 
 const loadEnvVars = ():envConfig =>{
@@ -66,7 +73,8 @@ const loadEnvVars = ():envConfig =>{
    "SSL_SUCCESS_FRONTEND_URL", "SSL_FAIL_FRONTEND_URL", "SSL_CANCEL_FRONTEND_URL",
    "SSL_SUCCESS_BACKEND_URL", "SSL_FAIL_BACKEND_URL", "SSL_CANCEL_BACKEND_URL",
     "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET",
-   "SMTP_USER", "SMTP_PASS", "SMTP_PORT", "SMTP_HOST", "SMTP_FROM"]
+   "SMTP_USER", "SMTP_PASS", "SMTP_PORT", "SMTP_HOST", "SMTP_FROM",
+  "REDIS_HOST","REDIS_PORT","REDIS_USERNAME","REDIS_PASSWORD"]
 
     reqEnvVars.forEach(key=>{
         if(!process.env[key]){
@@ -119,6 +127,15 @@ const loadEnvVars = ():envConfig =>{
             SMTP_HOST: process.env.SMTP_HOST as string,
             SMTP_FROM: process.env.SMTP_FROM as string,
         },
+
+        // redis opt
+
+        REDIS:{
+          REDIS_HOST: process.env.REDIS_HOST as string,
+          REDIS_PORT: process.env.REDIS_PORT as string,
+          REDIS_USERNAME: process.env.REDIS_USERNAME as string,
+          REDIS_PASSWORD: process.env.REDIS_PASSWORD as string
+        }
       
 }
 }
