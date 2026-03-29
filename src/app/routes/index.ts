@@ -5,6 +5,7 @@ import { DivisionRoutes } from "../modulars/division/division.route";
 import { TourRoutes } from "../modulars/tour/tour.route";
 import { BookingRoutes } from "../modulars/booking/booking.route";
 import { paymentRouter } from "../modulars/payments/payment.route";
+import { OtpRoutes } from "../modulars/otp/otp.route";
 
 
 
@@ -34,6 +35,10 @@ import { paymentRouter } from "../modulars/payments/payment.route";
     {
       path:'/payment',
       route:paymentRouter
+    },
+    {
+      path:'/otp',
+      route:OtpRoutes
     }
     
  ]
