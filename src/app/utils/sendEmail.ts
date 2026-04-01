@@ -22,7 +22,7 @@ interface SendEmailOptions {
     to:string,
     subject:string,
     templateName:string,
-    templateData?:Record<string, unknown>,
+    templateData?: Record<string, any>,
      attachments?: {
         filename: string,
         content: Buffer | string,
@@ -57,8 +57,5 @@ export const sendEmail = async ({
         throw new AppError(401, "Email error")
     }
 }
-
-
-
 
 

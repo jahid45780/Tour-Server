@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import AppError from "../../errorHerplrs/appError"
+import { generatePdf, IInvoiceData } from "../../utils/invoice"
+import { sendEmail } from "../../utils/sendEmail"
 import { BOOKING_STATUS } from "../booking/booking.interface"
 import { Booking } from "../booking/booking.model"
 import { SSLCommerz } from "../sslCommerz/sslCommerz.interface"
 import { SSLService } from "../sslCommerz/sslCommerz.service"
+import { ITour } from "../tour/tour.interface"
+import { IUser } from "../users/user.interface"
 import { PAYMENT_STATUS } from "./payment.interface"
 import { Payment } from "./payment.model"
 import  httpStatue  from 'http-status-codes';
@@ -54,11 +58,45 @@ const successPayment = async(query: Record<string, string>)=>{
             status: PAYMENT_STATUS.PAID
         },{new:true, runValidators:true, session })
 
-       await Booking.findByIdAndUpdate(
+      if(!updatedPayment){
+        throw new AppError(401,"payment not found")
+      }  
+
+     const updateBooking = await Booking.findByIdAndUpdate(
               updatedPayment?.booking,
                { status: BOOKING_STATUS.COMPLETE},
                {new:true, runValidators:true, session }
-           )
+           ).populate("tour", "title")
+            .populate("user",  "name email")
+
+        if(!updateBooking){
+          throw new AppError(401,"Booking not found")
+        }
+
+      const invoiceData:IInvoiceData={
+        bookingDate:updateBooking.createdAt as Date,
+        guestCount:updateBooking.guestCount,
+        totalAmount:updatedPayment.amount,
+        tourTitle:(updateBooking.tour as unknown as ITour).title,
+        transactionId:updatedPayment.transactionId,
+        userName:(updateBooking.user as unknown as IUser).name
+      }  
+
+    const pdfBuffer = await generatePdf(invoiceData)
+
+      await sendEmail({
+        to:(updateBooking.user as unknown as IUser).email,
+        subject:"your booking invoice",
+        templateName:"invoice",
+        templateData:invoiceData,
+        attachments:[
+          {
+            filename:"invoice.pdf",
+            content:pdfBuffer,
+            contentType:"application/pdf"
+          }
+        ]
+      })
 
             await session.commitTransaction()
             session.endSession()
