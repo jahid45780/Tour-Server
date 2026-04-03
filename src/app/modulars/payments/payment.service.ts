@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { uploadBufferToCloudinary } from "../../config/cloudinary.config"
 import AppError from "../../errorHerplrs/appError"
 import { generatePdf, IInvoiceData } from "../../utils/invoice"
 import { sendEmail } from "../../utils/sendEmail"
@@ -84,6 +85,15 @@ const successPayment = async(query: Record<string, string>)=>{
 
     const pdfBuffer = await generatePdf(invoiceData)
 
+    const cloudinaryResult = await uploadBufferToCloudinary(pdfBuffer,"invoice")
+   
+    if(!cloudinaryResult){
+       throw new AppError(401, "Error uploading pdf")
+    }
+
+    await Payment.findByIdAndUpdate(updatedPayment._id, {invoiceURL:cloudinaryResult.secure_url}, {runValidators:true, session})
+
+
       await sendEmail({
         to:(updateBooking.user as unknown as IUser).email,
         subject:"your booking invoice",
@@ -97,6 +107,7 @@ const successPayment = async(query: Record<string, string>)=>{
           }
         ]
       })
+
 
             await session.commitTransaction()
             session.endSession()
@@ -161,9 +172,25 @@ const cancelPayment = async(query: Record<string, string>)=>{
       }
 }
 
+const getInvoiceDownloadUrl = async (paymentId:string)=>{
+  const payment = await Payment.findById(paymentId)
+  .select("invoiceURL")
+
+  if(!payment){
+    throw new AppError(401, "Payment not found") 
+  }
+
+  if(!payment.invoiceURL){
+    throw new AppError(401, "No invoice found")
+  }
+
+  return payment.invoiceURL
+}
+
  export const paymentService = {
     initPayment,
     successPayment,
     failPayment,
-    cancelPayment
+    cancelPayment,
+    getInvoiceDownloadUrl
 }

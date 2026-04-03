@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import { envVers } from "./env";
 import AppError from "../errorHerplrs/appError";
+import stream from "stream";
+import { promise } from "zod";
+
+
 
 cloudinary.config({
     cloud_name:envVers.CLOUDINARY.CLOUDINARY_CLOUD_NAME,
@@ -9,6 +14,33 @@ cloudinary.config({
     api_secret:envVers.CLOUDINARY.CLOUDINARY_API_SECRET
 })
 
+export const uploadBufferToCloudinary = async (buffer:Buffer, fileName: string) :Promise<UploadApiResponse | undefined> =>{
+    try {
+      return new Promise((resolve, reject)=>{
+         const public_id = `pdf/${fileName}-${Date.now()}`
+        const bufferStream = new stream.PassThrough();
+        bufferStream.end(buffer);
+
+        cloudinary.uploader.upload_stream(
+            {
+                resource_type:"auto",
+                public_id:public_id,
+                folder:"pdf"
+            },
+            (error,result)=>{
+                if(error){
+                     return reject(error);
+                }
+                 resolve(result)
+            }
+        ).end(buffer)
+      }) 
+
+    } catch (error:any) {
+        console.log(error);
+        throw new AppError(401,`Error uploading file ${error.message}`)
+    }
+}
 
 export const deleteImageFromCLoudinary = async (url:string)=>{
     try {
@@ -26,3 +58,11 @@ export const deleteImageFromCLoudinary = async (url:string)=>{
 }
 
 export const cloudinaryUpload = cloudinary
+
+function reject(error: UploadApiErrorResponse): void {
+    throw new Error("Function not implemented.");
+}
+function resolve(result: UploadApiResponse | undefined) {
+    throw new Error("Function not implemented.");
+}
+
