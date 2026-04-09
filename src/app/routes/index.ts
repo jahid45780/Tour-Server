@@ -6,6 +6,7 @@ import { TourRoutes } from "../modulars/tour/tour.route";
 import { BookingRoutes } from "../modulars/booking/booking.route";
 import { paymentRouter } from "../modulars/payments/payment.route";
 import { OtpRoutes } from "../modulars/otp/otp.route";
+import { StatsRoutes } from "../modulars/stats/stats.route";
 
 
 
@@ -39,6 +40,10 @@ import { OtpRoutes } from "../modulars/otp/otp.route";
     {
       path:'/otp',
       route:OtpRoutes
+    },
+    {
+      path:'/stats',
+      route:StatsRoutes
     }
     
  ]
