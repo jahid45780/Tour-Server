@@ -31,7 +31,7 @@ const getAllDivisions = catchAsync(async (req:Request, res:Response)=>{
         success: true,
         message: "Divisions retrieved",
         data: result.data,
-        meta: result.meta,
+        // meta: result.meta,
     });
 })
 

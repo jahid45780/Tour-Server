@@ -4,6 +4,7 @@ import { validateRequest } from "../../middleware/validateRequest";
 import { createUserZodSchema } from "./user.validation";
 import { checkAuth } from "../auth/authCheck";
 import { Role } from "./user.interface";
+import { multerUpload } from "../../config/multer.config";
 
 
 
@@ -11,7 +12,9 @@ import { Role } from "./user.interface";
 
 const router = Router()
 
-router.post('/register', validateRequest(createUserZodSchema), userController.createUser)
+router.post('/register', 
+    multerUpload.single("file"),
+    validateRequest(createUserZodSchema), userController.createUser)
 
 router.get('/all-users', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), userController.getAllUsers )
 router.get("/me", checkAuth(...Object.values(Role)), userController.getMe)

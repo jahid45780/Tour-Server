@@ -11,7 +11,7 @@ const createTour = catchAsync (async (req:Request, res:Response)=>{
     }
     const result = await TourService.createTour(payload);
 
-        sentResponse (res, {
+        sentResponse (res, { 
         statusCode: 201,
         success: true,
         message: 'Tour created successfully',
