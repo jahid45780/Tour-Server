@@ -10,6 +10,7 @@ router.post('/init-payment',paymentController.initPayment)
 router.post('/success', paymentController.successPayment)
 router.post('/fail', paymentController.failPayment)
 router.post('/cancel', paymentController.cancelPayment)
-router.get('invoice/:paymentId', checkAuth(...Object.values(Role)), paymentController.getInvoiceDownloadUrl)
+router.get('/invoice/:paymentId', checkAuth(...Object.values(Role)), paymentController.getInvoiceDownloadUrl)
+router.post("/validate-payment", paymentController.validatePayment)
 
 export const paymentRouter = router

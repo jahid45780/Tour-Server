@@ -29,7 +29,33 @@ const getUserStats = catchAsync(async (req:Request, res:Response)=>{
         
     })
 
+    const getBookingStats = catchAsync(async (req:Request, res:Response)=>{
+      const stats = await StatsService.getBookingStats()
+
+      sentResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "booking stats fetched successfully",
+        data: stats,
+    });
+
+    })
+
+    const getPaymentStats = catchAsync(async(req:Request, res:Response)=>{
+         const stats = await StatsService.getPaymentStats()
+
+          sentResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "payment stats fetched successfully",
+        data: stats,
+    });
+
+    })
+
 export const  StatsController = {
     getUserStats,
-   getTourStats
+   getTourStats,
+   getBookingStats,
+   getPaymentStats
 }
