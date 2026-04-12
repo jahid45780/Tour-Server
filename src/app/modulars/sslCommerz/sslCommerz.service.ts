@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { envVers } from "../../config/env";
 import AppError from "../../errorHerplrs/appError";
 import { SSLCommerz } from "./sslCommerz.interface";
 import axios from "axios"
 import  httpStatue  from 'http-status-codes';
+import { Payment } from "../payments/payment.model";
 
 const sslPaymentInit = async(payload:SSLCommerz)=>{
 
@@ -16,7 +18,7 @@ const sslPaymentInit = async(payload:SSLCommerz)=>{
             success_url:`${envVers.SSL.SSL_SUCCESS_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=success`,
             fail_url: `${envVers.SSL.SSL_FAIL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=fail`,
             cancel_url:`${envVers.SSL.SSL_CANCEL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=cancel`,
-            // ipn_url: "http://localhost:3030/ipn",
+            ipn_url:envVers.SSL.SSL_IPN_URL,
             shipping_method: "N/A",
             product_name: "Tour",
             product_category: "Service",
@@ -46,6 +48,8 @@ const sslPaymentInit = async(payload:SSLCommerz)=>{
         headers: { "Content-Type": "application/x-www-form-urlencoded" }
     })
 
+
+
     return response.data
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,6 +59,28 @@ const sslPaymentInit = async(payload:SSLCommerz)=>{
    }
 }
 
+
+const vaildatePayment = async (payload: any)=>{
+    try {
+       const response = await axios({
+        method:"GET",
+        url:`${envVers.SSL.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVers.SSL.SSL_STORE_ID}&store_passwd=${envVers.SSL.SSL_STORE_PASS}`
+
+       }) 
+       console.log("sslcomeerz validate api response", response.data);
+
+       await Payment.updateOne(
+        {transactionId: payload.tran_id},
+        {paymentGatewayData: response.data},
+        {runValidators: true}
+       )
+    } catch (error: any) {
+        console.log(error);
+        throw new AppError(401, `Payment Validation Error, ${error.message}`)
+    }
+}
+
 export const SSLService = {
-    sslPaymentInit
+    sslPaymentInit,
+    vaildatePayment
 }

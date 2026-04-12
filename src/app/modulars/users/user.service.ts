@@ -34,10 +34,20 @@ const createUser = async (payload:Partial<IUser>)=>{
 
 const updateUser  = async (userId:string, payload:Partial<IUser>, decodedToken:JwtPayload)=>{
     
+    if(decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE){
+        if(userId !== decodedToken.userId){
+            throw new AppError(401,"your not authorized")
+        }
+    }
+
     const isUserExist = await User.findById(userId)
 
     if(!isUserExist){
         throw new AppError(httpStatue.NOT_FOUND,"User Not found")
+    }
+
+    if(decodedToken.role === Role.ADMIN && isUserExist.role === Role.SUPER_ADMIN){
+        throw new AppError(401, "your not authorized")
     }
     
     if(payload.role){
@@ -46,9 +56,6 @@ const updateUser  = async (userId:string, payload:Partial<IUser>, decodedToken:J
             }
         }
 
-        if(payload.role === Role.SUPER_ADMIN && decodedToken.role === Role.ADMIN){
-            throw new AppError(httpStatue.FORBIDDEN,"you are not authorized")
-        }
 
         if(payload.IsActive, payload.IsDeleted, payload.IsVerified){
              if(decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE){
@@ -56,9 +63,10 @@ const updateUser  = async (userId:string, payload:Partial<IUser>, decodedToken:J
             }
         }
 
-        if(payload.password){
-            payload.password = await bcryptjs.hash(payload.password, envVers.BCRYPT_SALT_ROUND)
-        }
+        // akon ata dorker nai now ameader kasay chech pass api ascy
+        // if(payload.password){
+        //     payload.password = await bcryptjs.hash(payload.password, envVers.BCRYPT_SALT_ROUND)
+        // }
 
         const newUpdateUser = await User.findByIdAndUpdate(userId, payload ,{new:true, runValidators:true} )
 

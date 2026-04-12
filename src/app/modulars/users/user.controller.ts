@@ -8,6 +8,7 @@ import { sentResponse } from "../../utils/sendResponse";
 import { verifyToken } from "../../utils/jwt";
 import { envVers } from "../../config/env";
 import { JwtPayload } from 'jsonwebtoken';
+import { IUser } from "./user.interface";
 
 
 
@@ -15,9 +16,13 @@ import { JwtPayload } from 'jsonwebtoken';
 
 
 const createUser = catchAsync (async  (req:Request, res:Response, next:NextFunction)=>{
-  const user  = await userService.createUser(req.body)
 
-
+     const payload :IUser={
+          ...req.body,
+          picture:req.file?.path
+      }
+  
+  const user  = await userService.createUser(payload)
 
     sentResponse(res,{
       success:true,
