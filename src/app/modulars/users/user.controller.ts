@@ -12,9 +12,6 @@ import { IUser } from "./user.interface";
 
 
 
-
-
-
 const createUser = catchAsync (async  (req:Request, res:Response, next:NextFunction)=>{
 
      const payload :IUser={
@@ -54,7 +51,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextF
     const result = await userService.getSingleUser(id);
    sentResponse(res, {
         success: true,
-        statusCode: httpStatus.CREATED,
+        statusCode: httpStatus.OK,
         message: "User Retrieved Successfully",
         data: result.data
     })
@@ -67,7 +64,7 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
 
     sentResponse(res, {
         success: true,
-        statusCode: httpStatus.CREATED,
+        statusCode: httpStatus.OK,
         message: "Your profile Retrieved Successfully",
         data: result.data
     })

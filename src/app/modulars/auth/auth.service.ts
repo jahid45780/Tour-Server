@@ -24,6 +24,11 @@ const credentialsLogin = async (payload:Partial<IUser>)=>{
              throw new AppError(400, "email dose not  exist")
          }
 
+           // VERIFY CHECK
+  if (!isUserExist.IsVerified) {
+    throw new AppError(401, "User is not verified");
+  }
+
    const isPasswordMatched = await bcrypt.compare(password as string, isUserExist.password as string )
    
    if(!isPasswordMatched){
