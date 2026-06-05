@@ -124,17 +124,18 @@ const getNewAccessToken = catchAsync(async(req:Request, res:Response, next:NextF
 
 const logout = catchAsync(async (req:Request, res:Response, next:NextFunction)=>{
   
-   res.clearCookie("accessToken",{
-    httpOnly:true,
-    secure:false,
-    sameSite:"lax"
-   })
+ res.clearCookie("AccessToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
 
-    res.clearCookie("refreshToken",{
-    httpOnly:true,
-    secure:false,
-    sameSite:"lax"
-   })
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+
   
   sentResponse(res,{
     success:true,
