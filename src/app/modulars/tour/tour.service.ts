@@ -133,8 +133,14 @@ const createTourType = async (payload: ITourType) => {
   return result;
 };
 
-const getAllTourTypes = async()=>{
-    return await TourType.find()
+const getAllTourTypes = async(
+      // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+      page: number = 1,
+      // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+      limit: number = 10
+)=>{
+    const skip = (page - 1) * limit;
+    return await TourType.find().skip(skip).limit(limit);
 }
 
 const updateTourType = async (id:string, payload:ITourType)=>{
