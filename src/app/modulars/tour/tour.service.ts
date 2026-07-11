@@ -140,7 +140,21 @@ const getAllTourTypes = async(
       limit: number = 10
 )=>{
     const skip = (page - 1) * limit;
-    return await TourType.find().skip(skip).limit(limit);
+    
+    const [tourTypes, total] = await Promise.all([
+    TourType.find().skip(skip).limit(limit),
+    TourType.countDocuments(),
+  ]);
+
+    return {
+    data: tourTypes,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit),
+    },
+  };
 }
 
 const updateTourType = async (id:string, payload:ITourType)=>{
