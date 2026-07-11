@@ -22,6 +22,13 @@ passport.use(
                 return done (null, false ,{message:"user does not exist"})
              }
 
+              // VERIFY CHECK
+        if (!isUserExist.IsVerified) {
+          return done(null, false, {
+            message: "User is not verified",
+          });
+        }
+
        const isGoogleAuthenticated = isUserExist.auths.some(providerObjects =>providerObjects.provider == "google" )
 
        if(isGoogleAuthenticated && !isUserExist.password){
