@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
@@ -93,10 +94,53 @@ const updateUser = catchAsync(async(req:Request, res:Response, next:NextFunction
 
 
 
+const deleteUser = catchAsync(async(req:Request, res:Response, next:NextFunction)=>{
+  
+  const {userId} = req.params;
+
+  const result = await userService.deleteUser(
+       req.params.userId,
+       req.user!
+  )
+  
+
+  sentResponse(res,{
+    success:true,
+    statusCode:httpStatus.OK,
+    message:"successfully delete users",
+    data:result
+  })
+
+})
+
+
+const changeUserRole = catchAsync(async (req:Request, res:Response, next:NextFunction) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  const result = await userService.changeUserRoleIntoDB(
+    id,
+    role,
+    req.user! 
+  );
+
+  sentResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Role updated successfully",
+    data: result,
+  });
+});
+
+
+
+
  export const userController = {
     createUser,
     getAllUsers,
     updateUser,
     getSingleUser,
-    getMe
+    getMe,
+    deleteUser,
+    changeUserRole
 }

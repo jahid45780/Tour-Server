@@ -6,6 +6,7 @@ import { IAuthProvider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import bcryptjs from "bcrypt";
 import httpStatue  from 'http-status-codes';
+import  httpStatus  from 'http-status-codes';
 
 const createUser = async (payload:Partial<IUser>)=>{
 
@@ -102,10 +103,65 @@ const getMe = async (userId: string) => {
     }
 };
 
+const deleteUser = async (userId: string, decodedToken: JwtPayload) => {
+
+    if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
+        if(userId !== decodedToken.userId) {
+            throw  new AppError(401, "you are not authorized")
+        }
+    }
+
+    return await User.findByIdAndDelete(userId)
+
+    }
+
+
+ const changeUserRoleIntoDB = async (
+  id: string,
+  role: Role,
+  loggedInUser: JwtPayload
+) => {
+  
+    // Extra security
+  if (loggedInUser.role !== Role.ADMIN) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not authorized"
+    );
+  }
+
+
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "User not found"
+    );
+  }
+
+
+  if (user.role === Role.ADMIN) {
+  throw new AppError(
+    httpStatus.BAD_REQUEST,
+    "Admin role cannot be changed."
+  );
+}
+
+  user.role = role;
+  await user.save();
+
+  return user;
+};
+
+
+
 export const userService = {
     createUser,
     getUsers,
     updateUser,
     getSingleUser,
-    getMe
+    getMe,
+    deleteUser,
+    changeUserRoleIntoDB
 }
