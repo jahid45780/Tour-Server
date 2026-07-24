@@ -7,6 +7,7 @@ import { BookingRoutes } from "../modulars/booking/booking.route";
 import { paymentRouter } from "../modulars/payments/payment.route";
 import { OtpRoutes } from "../modulars/otp/otp.route";
 import { StatsRoutes } from "../modulars/stats/stats.route";
+import { BookingsRoutes } from "../modulars/myBookings/myBookings.route";
 
 
 
@@ -44,6 +45,10 @@ import { StatsRoutes } from "../modulars/stats/stats.route";
     {
       path:'/stats',
       route:StatsRoutes
+    },
+      {
+      path:'/myBookings',
+      route:BookingsRoutes
     }
     
  ]
