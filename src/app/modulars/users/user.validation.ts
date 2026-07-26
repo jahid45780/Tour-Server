@@ -76,10 +76,10 @@ import { isActive, Role } from "./user.interface"
     .enum(Object.values(isActive) as [string])
     .optional(),
     IsDeleted: z
-    .string({invalid_type_error:"isDelete must be true or false"})
+    .boolean({invalid_type_error:"isDelete must be true or false"})
     .optional(),
      IsVerified: z
-    .string({invalid_type_error:"isVerified must be true or false"})
+    .boolean({invalid_type_error:"isVerified must be true or false"})
     .optional()
 
 

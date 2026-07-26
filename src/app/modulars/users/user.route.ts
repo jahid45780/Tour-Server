@@ -1,7 +1,7 @@
 import {  Router } from "express";
 import { userController } from "./user.controller";
 import { validateRequest } from "../../middleware/validateRequest";
-import { createUserZodSchema } from "./user.validation";
+import { createUserZodSchema, UpdateUserZodSchema } from "./user.validation";
 import { checkAuth } from "../auth/authCheck";
 import { Role } from "./user.interface";
 import { multerUpload } from "../../config/multer.config";
@@ -19,7 +19,7 @@ router.post('/register',
 router.get('/all-users', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), userController.getAllUsers )
 router.get("/me", checkAuth(...Object.values(Role)), userController.getMe)
 router.get("/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), userController.getSingleUser)
-router.patch("/:id", validateRequest(createUserZodSchema), checkAuth(...Object.values(Role)), userController.updateUser)
+router.patch("/:id", validateRequest(UpdateUserZodSchema), checkAuth(...Object.values(Role)), userController.updateUser)
 router.patch("/change-role/:id", checkAuth(Role.ADMIN), userController.changeUserRole)
 router.delete("/:userId", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), userController.deleteUser )
 

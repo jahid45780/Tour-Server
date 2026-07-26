@@ -58,7 +58,7 @@ const updateUser  = async (userId:string, payload:Partial<IUser>, decodedToken:J
         }
 
 
-        if(payload.IsActive, payload.IsDeleted, payload.IsVerified){
+        if(payload.IsActive || payload.IsDeleted || payload.IsVerified){
              if(decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE){
                 throw new AppError(httpStatue.FORBIDDEN,"you are not authorized")
             }
