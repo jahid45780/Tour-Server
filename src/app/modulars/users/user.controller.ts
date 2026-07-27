@@ -79,6 +79,11 @@ const updateUser = catchAsync(async(req:Request, res:Response, next:NextFunction
   // const token = req.headers.authorization
   // const verifiedToken = verifyToken(token as string, envVers.BCRYPT_SALT_ROUND) as JwtPayload
    const payload = req.body
+
+       if (req.file) {
+      payload.picture = req.file.path; 
+    }
+
    const user  =  await userService.updateUser(userId, payload, verifiedToken as JwtPayload )
   
 
