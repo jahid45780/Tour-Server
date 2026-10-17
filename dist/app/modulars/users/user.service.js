@@ -30,6 +30,7 @@ const user_interface_1 = require("./user.interface");
 const user_model_1 = require("./user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const http_status_codes_2 = __importDefault(require("http-status-codes"));
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload, rest = __rest(payload, ["email", "password"]);
     const isUserExist = yield user_model_1.User.findOne({ email });
@@ -59,7 +60,7 @@ const updateUser = (userId, payload, decodedToken) => __awaiter(void 0, void 0, 
             throw new appError_1.default(http_status_codes_1.default.FORBIDDEN, "you are not authorized");
         }
     }
-    if (payload.IsActive, payload.IsDeleted, payload.IsVerified) {
+    if (payload.IsActive || payload.IsDeleted || payload.IsVerified) {
         if (decodedToken.role === user_interface_1.Role.USER || decodedToken.role === user_interface_1.Role.GUIDE) {
             throw new appError_1.default(http_status_codes_1.default.FORBIDDEN, "you are not authorized");
         }
@@ -93,10 +94,36 @@ const getMe = (userId) => __awaiter(void 0, void 0, void 0, function* () {
         data: user
     };
 });
+const deleteUser = (userId, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    if (decodedToken.role === user_interface_1.Role.USER || decodedToken.role === user_interface_1.Role.GUIDE) {
+        if (userId !== decodedToken.userId) {
+            throw new appError_1.default(401, "you are not authorized");
+        }
+    }
+    return yield user_model_1.User.findByIdAndDelete(userId);
+});
+const changeUserRoleIntoDB = (id, role, loggedInUser) => __awaiter(void 0, void 0, void 0, function* () {
+    // Extra security
+    if (loggedInUser.role !== user_interface_1.Role.ADMIN) {
+        throw new appError_1.default(http_status_codes_2.default.FORBIDDEN, "You are not authorized");
+    }
+    const user = yield user_model_1.User.findById(id);
+    if (!user) {
+        throw new appError_1.default(http_status_codes_2.default.NOT_FOUND, "User not found");
+    }
+    if (user.role === user_interface_1.Role.ADMIN) {
+        throw new appError_1.default(http_status_codes_2.default.BAD_REQUEST, "Admin role cannot be changed.");
+    }
+    user.role = role;
+    yield user.save();
+    return user;
+});
 exports.userService = {
     createUser,
     getUsers,
     updateUser,
     getSingleUser,
-    getMe
+    getMe,
+    deleteUser,
+    changeUserRoleIntoDB
 };

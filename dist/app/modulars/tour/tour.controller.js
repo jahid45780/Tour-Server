@@ -65,12 +65,15 @@ const createTourType = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void
     });
 }));
 const getAllTourTypes = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield tour_service_1.TourService.getAllTourTypes();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const result = yield tour_service_1.TourService.getAllTourTypes(page, limit);
     (0, sendResponse_1.sentResponse)(res, {
         statusCode: 200,
         success: true,
         message: 'Tour types retrieved successfully',
-        data: result,
+        data: result.data,
+        meta: result.meta,
     });
 }));
 const updateTourType = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

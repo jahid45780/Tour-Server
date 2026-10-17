@@ -110,8 +110,25 @@ const createTourType = (payload) => __awaiter(void 0, void 0, void 0, function* 
     const result = yield tour_model_1.TourType.create(payload);
     return result;
 });
-const getAllTourTypes = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield tour_model_1.TourType.find();
+const getAllTourTypes = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (
+// eslint-disable-next-line @typescript-eslint/no-inferrable-types
+page = 1, 
+// eslint-disable-next-line @typescript-eslint/no-inferrable-types
+limit = 10) {
+    const skip = (page - 1) * limit;
+    const [tourTypes, total] = yield Promise.all([
+        tour_model_1.TourType.find().skip(skip).limit(limit),
+        tour_model_1.TourType.countDocuments(),
+    ]);
+    return {
+        data: tourTypes,
+        meta: {
+            page,
+            limit,
+            total,
+            totalPage: Math.ceil(total / limit),
+        },
+    };
 });
 const updateTourType = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const existingTourType = yield tour_model_1.TourType.findById(id);

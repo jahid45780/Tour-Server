@@ -70,9 +70,9 @@ exports.UpdateUserZodSchema = zod_1.z.object({
         .enum(Object.values(user_interface_1.isActive))
         .optional(),
     IsDeleted: zod_1.z
-        .string({ invalid_type_error: "isDelete must be true or false" })
+        .boolean({ invalid_type_error: "isDelete must be true or false" })
         .optional(),
     IsVerified: zod_1.z
-        .string({ invalid_type_error: "isVerified must be true or false" })
+        .boolean({ invalid_type_error: "isVerified must be true or false" })
         .optional()
 });

@@ -42,7 +42,7 @@ const getSingleUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
     const result = yield user_service_1.userService.getSingleUser(id);
     (0, sendResponse_1.sentResponse)(res, {
         success: true,
-        statusCode: http_status_codes_1.default.CREATED,
+        statusCode: http_status_codes_1.default.OK,
         message: "User Retrieved Successfully",
         data: result.data
     });
@@ -52,7 +52,7 @@ const getMe = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0,
     const result = yield user_service_1.userService.getMe(decodedToken.userId);
     (0, sendResponse_1.sentResponse)(res, {
         success: true,
-        statusCode: http_status_codes_1.default.CREATED,
+        statusCode: http_status_codes_1.default.OK,
         message: "Your profile Retrieved Successfully",
         data: result.data
     });
@@ -63,6 +63,9 @@ const updateUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(vo
     // const token = req.headers.authorization
     // const verifiedToken = verifyToken(token as string, envVers.BCRYPT_SALT_ROUND) as JwtPayload
     const payload = req.body;
+    if (req.file) {
+        payload.picture = req.file.path;
+    }
     const user = yield user_service_1.userService.updateUser(userId, payload, verifiedToken);
     (0, sendResponse_1.sentResponse)(res, {
         success: true,
@@ -71,10 +74,33 @@ const updateUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(vo
         data: user
     });
 }));
+const deleteUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const result = yield user_service_1.userService.deleteUser(req.params.userId, req.user);
+    (0, sendResponse_1.sentResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        message: "successfully delete users",
+        data: result
+    });
+}));
+const changeUserRole = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { role } = req.body;
+    const result = yield user_service_1.userService.changeUserRoleIntoDB(id, role, req.user);
+    (0, sendResponse_1.sentResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Role updated successfully",
+        data: result,
+    });
+}));
 exports.userController = {
     createUser,
     getAllUsers,
     updateUser,
     getSingleUser,
-    getMe
+    getMe,
+    deleteUser,
+    changeUserRole
 };

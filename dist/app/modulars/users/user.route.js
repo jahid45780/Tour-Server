@@ -13,5 +13,7 @@ router.post('/register', multer_config_1.multerUpload.single("file"), (0, valida
 router.get('/all-users', (0, authCheck_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), user_controller_1.userController.getAllUsers);
 router.get("/me", (0, authCheck_1.checkAuth)(...Object.values(user_interface_1.Role)), user_controller_1.userController.getMe);
 router.get("/:id", (0, authCheck_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), user_controller_1.userController.getSingleUser);
-router.patch("/:id", (0, validateRequest_1.validateRequest)(user_validation_1.createUserZodSchema), (0, authCheck_1.checkAuth)(...Object.values(user_interface_1.Role)), user_controller_1.userController.updateUser);
+router.patch("/:id", multer_config_1.multerUpload.single("file"), (0, validateRequest_1.validateRequest)(user_validation_1.UpdateUserZodSchema), (0, authCheck_1.checkAuth)(...Object.values(user_interface_1.Role)), user_controller_1.userController.updateUser);
+router.patch("/change-role/:id", (0, authCheck_1.checkAuth)(user_interface_1.Role.ADMIN), user_controller_1.userController.changeUserRole);
+router.delete("/:userId", (0, authCheck_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), user_controller_1.userController.deleteUser);
 exports.userRouter = router;

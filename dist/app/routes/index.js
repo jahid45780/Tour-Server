@@ -10,6 +10,7 @@ const booking_route_1 = require("../modulars/booking/booking.route");
 const payment_route_1 = require("../modulars/payments/payment.route");
 const otp_route_1 = require("../modulars/otp/otp.route");
 const stats_route_1 = require("../modulars/stats/stats.route");
+const myBookings_route_1 = require("../modulars/myBookings/myBookings.route");
 exports.router = (0, express_1.Router)();
 const moduleRouter = [
     {
@@ -43,6 +44,10 @@ const moduleRouter = [
     {
         path: '/stats',
         route: stats_route_1.StatsRoutes
+    },
+    {
+        path: '/myBookings',
+        route: myBookings_route_1.BookingsRoutes
     }
 ];
 moduleRouter.forEach((route) => {

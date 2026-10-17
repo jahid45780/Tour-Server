@@ -29,6 +29,12 @@ passport_1.default.use(new passport_local_1.Strategy({
         if (!isUserExist) {
             return done(null, false, { message: "user does not exist" });
         }
+        // VERIFY CHECK
+        if (!isUserExist.IsVerified) {
+            return done(null, false, {
+                message: "User is not verified",
+            });
+        }
         const isGoogleAuthenticated = isUserExist.auths.some(providerObjects => providerObjects.provider == "google");
         if (isGoogleAuthenticated && !isUserExist.password) {
             return done(null, false, { message: "you have authentic through google. so if  you want  to login with credentials then at first login with google and  set a password  for  your gmail and then you can login with email and password" });

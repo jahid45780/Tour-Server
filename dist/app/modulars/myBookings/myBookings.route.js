@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BookingsRoutes = void 0;
+const express_1 = require("express");
+const authCheck_1 = require("../auth/authCheck");
+const myBookings_controller_1 = require("./myBookings.controller");
+const user_interface_1 = require("../users/user.interface");
+const router = (0, express_1.Router)();
+router.get("/bookings", (0, authCheck_1.checkAuth)(user_interface_1.Role.USER, user_interface_1.Role.ADMIN), myBookings_controller_1.BookingController.getMyBookings);
+exports.BookingsRoutes = router;

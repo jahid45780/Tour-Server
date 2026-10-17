@@ -41,6 +41,10 @@ const credentialsLogin = (payload) => __awaiter(void 0, void 0, void 0, function
     if (!isUserExist) {
         throw new appError_1.default(400, "email dose not  exist");
     }
+    // VERIFY CHECK
+    if (!isUserExist.IsVerified) {
+        throw new appError_1.default(401, "User is not verified");
+    }
     const isPasswordMatched = yield bcrypt_1.default.compare(password, isUserExist.password);
     if (!isPasswordMatched) {
         throw new appError_1.default(400, " incorrect password");

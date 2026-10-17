@@ -20,7 +20,7 @@ const user_model_1 = require("../users/user.model");
 const user_interface_1 = require("../users/user.interface");
 exports.checkAuth = ((...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accessToken = req.headers.authorization;
+        const accessToken = req.headers.authorization || req.cookies.AccessToken;
         if (!accessToken) {
             throw new appError_1.default(403, "Not received token");
         }

@@ -1,44 +1,60 @@
 
-import express, { Request,  Response } from 'express'
-import cors from "cors"
+import express, { Request, Response } from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
-import { router } from './app/routes'
-import { globalErrorHandler } from './app/middleware/globalErrorHandler'
-import NotFound from './app/middleware/NotFound'
-import passport from 'passport';
-import "./app/config/passport"
-import expressSession from 'express-session'
-import { envVers } from './app/config/env';
+import expressSession from "express-session";
+import passport from "passport";
 
-const app = express()
-app.use(expressSession({
+import { router } from "./app/routes";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
+import NotFound from "./app/middleware/NotFound";
+import { envVers } from "./app/config/env";
+
+import "./app/config/passport";
+
+const app = express();
+
+app.set("trust proxy", 1);
+
+app.use(
+  cors({
+    origin: envVers.FRONTEND_URL,
+    credentials: true,
+  }),
+);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use(
+  expressSession({
+    name: "tourwave.sid",
     secret: envVers.EXPRESS_SESSION_SECRET,
-    resave:false,
-    saveUninitialized:false
-}))
-app.use(passport.initialize())
-app.use(passport.session())
-app.use(cookieParser())
-app.use(express.json())
-app.set("trust proxy", 1)
-app.use(express.urlencoded({extended:true}))
-app.use(cors({
-  origin:envVers.FRONTEND_URL,
-  credentials:true
-}))
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: envVers.NODE_ENV === "production",
+      sameSite:
+        envVers.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  }),
+);
 
-app.use('/api/v1', router)
+app.use(passport.initialize());
+app.use(passport.session());
 
+app.use("/api/v1", router);
 
-app.get("/",(req:Request, res:Response)=>{
-      res.status(200).json({
-        message:"welcome to tour management backed"
-      })
-})
+app.get("/", (_req: Request, res: Response) => {
+  res.status(200).json({
+    message: "Welcome to TourWave backend",
+  });
+});
 
-app.use(globalErrorHandler)
-app.use(NotFound)
+app.use(globalErrorHandler);
+app.use(NotFound);
 
 export default app;
-
-
