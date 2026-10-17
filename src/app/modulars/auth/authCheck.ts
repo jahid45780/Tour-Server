@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { NextFunction, Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../errorHerplrs/appError";
@@ -7,40 +7,61 @@ import { envVers } from "../../config/env";
 import { User } from "../users/user.model";
 import { isActive } from "../users/user.interface";
 
+export const checkAuth =
+  (...authRoles: string[]) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const authorization = req.headers.authorization;
 
- export const checkAuth = ((...authRoles:string[]) => async (req:Request, res:Response, next:NextFunction)=>{
-        try {
-    const accessToken = req.headers.authorization || req.cookies.AccessToken
+      const accessToken =
+        req.cookies?.AccessToken ||
+        (authorization?.startsWith("Bearer ")
+          ? authorization.split(" ")[1]
+          : authorization);
 
-    if(!accessToken){
-        throw new AppError(403, "Not received token")
+      if (!accessToken) {
+        throw new AppError(401, "Authentication token missing");
+      }
+
+      const verifiedToken = verifyToken(
+        accessToken,
+        envVers.JWT_ACCESS_SECRET
+      ) as JwtPayload;
+
+      if (!verifiedToken?.email || !verifiedToken?.userId) {
+        throw new AppError(401, "Invalid authentication token");
+      }
+
+      const user = await User.findOne({
+        email: verifiedToken.email,
+      });
+
+      if (!user) {
+        throw new AppError(401, "User does not exist");
+      }
+
+      if (
+        user.IsActive === isActive.BLOCKED ||
+        user.IsActive === isActive.INACTIVE
+      ) {
+        throw new AppError(403, `User is ${user.IsActive}`);
+      }
+
+      if (user.IsDeleted) {
+        throw new AppError(403, "User is deleted");
+      }
+
+      if (
+        authRoles.length > 0 &&
+        !authRoles.includes(String(verifiedToken.role))
+      ) {
+        throw new AppError(403, "You are not permitted to access this route");
+      }
+
+      req.user = verifiedToken;
+
+      return next();
+    } catch (error) {
+      return next(error);
     }
-
-    // const verifiedToken = jwt.verify(accessToken,"SECRET")
-    const verifiedToken  = verifyToken(accessToken, envVers.JWT_ACCESS_SECRET) as JwtPayload
-
-    const isUserExist = await User.findOne({email:verifiedToken.email})
-         
-             if(!isUserExist){
-                 throw new AppError(400, "user dose not  exist")
-             }
-    
-             if(isUserExist.IsActive === isActive.BLOCKED || isUserExist.IsActive === isActive.INACTIVE ){
-                 throw new AppError(400, `user is ${isUserExist.IsActive}`)
-             }
-    
-              if(isUserExist.IsDeleted){
-                 throw new AppError(400, "user is deleted")
-             }
-
-     if(!authRoles.includes(verifiedToken.role)){
-        throw new AppError(403, "you not permitted to view this  route")
-    }
-    
-    req.user = verifiedToken
-    
-    next()
-} catch (error) {
-    next(error)
-}
-})
+  };
