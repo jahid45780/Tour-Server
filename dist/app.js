@@ -6,33 +6,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const express_session_1 = __importDefault(require("express-session"));
+const passport_1 = __importDefault(require("passport"));
 const routes_1 = require("./app/routes");
 const globalErrorHandler_1 = require("./app/middleware/globalErrorHandler");
 const NotFound_1 = __importDefault(require("./app/middleware/NotFound"));
-const passport_1 = __importDefault(require("passport"));
-require("./app/config/passport");
-const express_session_1 = __importDefault(require("express-session"));
 const env_1 = require("./app/config/env");
+require("./app/config/passport");
 const app = (0, express_1.default)();
+app.set("trust proxy", 1);
+app.use((0, cors_1.default)({
+    origin: env_1.envVers.FRONTEND_URL,
+    credentials: true,
+}));
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
 app.use((0, express_session_1.default)({
+    name: "tourwave.sid",
     secret: env_1.envVers.EXPRESS_SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: env_1.envVers.NODE_ENV === "production",
+        sameSite: env_1.envVers.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 24 * 60 * 60 * 1000,
+    },
 }));
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
-app.use((0, cookie_parser_1.default)());
-app.use(express_1.default.json());
-app.set("trust proxy", 1);
-app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cors_1.default)({
-    origin: env_1.envVers.FRONTEND_URL,
-    credentials: true
-}));
-app.use('/api/v1', routes_1.router);
-app.get("/", (req, res) => {
+app.use("/api/v1", routes_1.router);
+app.get("/", (_req, res) => {
     res.status(200).json({
-        message: "welcome to tour management backed"
+        message: "Welcome to TourWave backend",
     });
 });
 app.use(globalErrorHandler_1.globalErrorHandler);

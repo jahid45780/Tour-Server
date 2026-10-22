@@ -18,31 +18,43 @@ const jwt_1 = require("../../utils/jwt");
 const env_1 = require("../../config/env");
 const user_model_1 = require("../users/user.model");
 const user_interface_1 = require("../users/user.interface");
-exports.checkAuth = ((...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const accessToken = req.headers.authorization || req.cookies.AccessToken;
+        const authorization = req.headers.authorization;
+        const accessToken = ((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.AccessToken) ||
+            ((authorization === null || authorization === void 0 ? void 0 : authorization.startsWith("Bearer "))
+                ? authorization.split(" ")[1]
+                : authorization);
         if (!accessToken) {
-            throw new appError_1.default(403, "Not received token");
+            throw new appError_1.default(401, "Authentication token missing");
         }
-        // const verifiedToken = jwt.verify(accessToken,"SECRET")
         const verifiedToken = (0, jwt_1.verifyToken)(accessToken, env_1.envVers.JWT_ACCESS_SECRET);
-        const isUserExist = yield user_model_1.User.findOne({ email: verifiedToken.email });
-        if (!isUserExist) {
-            throw new appError_1.default(400, "user dose not  exist");
+        if (!(verifiedToken === null || verifiedToken === void 0 ? void 0 : verifiedToken.email) || !(verifiedToken === null || verifiedToken === void 0 ? void 0 : verifiedToken.userId)) {
+            throw new appError_1.default(401, "Invalid authentication token");
         }
-        if (isUserExist.IsActive === user_interface_1.isActive.BLOCKED || isUserExist.IsActive === user_interface_1.isActive.INACTIVE) {
-            throw new appError_1.default(400, `user is ${isUserExist.IsActive}`);
+        const user = yield user_model_1.User.findOne({
+            email: verifiedToken.email,
+        });
+        if (!user) {
+            throw new appError_1.default(401, "User does not exist");
         }
-        if (isUserExist.IsDeleted) {
-            throw new appError_1.default(400, "user is deleted");
+        if (user.IsActive === user_interface_1.isActive.BLOCKED ||
+            user.IsActive === user_interface_1.isActive.INACTIVE) {
+            throw new appError_1.default(403, `User is ${user.IsActive}`);
         }
-        if (!authRoles.includes(verifiedToken.role)) {
-            throw new appError_1.default(403, "you not permitted to view this  route");
+        if (user.IsDeleted) {
+            throw new appError_1.default(403, "User is deleted");
+        }
+        if (authRoles.length > 0 &&
+            !authRoles.includes(String(verifiedToken.role))) {
+            throw new appError_1.default(403, "You are not permitted to access this route");
         }
         req.user = verifiedToken;
-        next();
+        return next();
     }
     catch (error) {
-        next(error);
+        return next(error);
     }
-}));
+});
+exports.checkAuth = checkAuth;
