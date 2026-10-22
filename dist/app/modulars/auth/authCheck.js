@@ -26,6 +26,8 @@ const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0
             ((authorization === null || authorization === void 0 ? void 0 : authorization.startsWith("Bearer "))
                 ? authorization.split(" ")[1]
                 : authorization);
+        console.log("Cookie names:", Object.keys(req.cookies || {}));
+        console.log("Authorization:", !!req.headers.authorization);
         if (!accessToken) {
             throw new appError_1.default(401, "Authentication token missing");
         }

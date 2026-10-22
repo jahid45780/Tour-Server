@@ -104,22 +104,20 @@ const getNewAccessToken = (0, catchAsync_1.catchAsync)((req, res, next) => __awa
         data: TokenInfo
     });
 }));
-const logout = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie("AccessToken", {
+const logout = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const cookieOptions = {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-    });
-    res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-    });
+        secure: true,
+        sameSite: "none",
+        path: "/",
+    };
+    res.clearCookie("AccessToken", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
     (0, sendResponse_1.sentResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,
-        message: "successfully  logged out user",
-        data: null
+        message: "Successfully logged out",
+        data: null,
     });
 }));
 const resetPassword = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

@@ -133,14 +133,11 @@ const logout = catchAsync(async (req: Request, res: Response) => {
   res.clearCookie("AccessToken", cookieOptions);
   res.clearCookie("refreshToken", cookieOptions);
 
-  sentResponse(res, {
+  res.status(200).json({
     success: true,
-    statusCode: httpStatue.OK,
     message: "Successfully logged out",
-    data: null,
   });
 });
-
 
 const resetPassword = catchAsync(async (req:Request, res:Response, next:NextFunction)=>{
   
