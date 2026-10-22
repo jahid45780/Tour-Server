@@ -19,6 +19,9 @@ export const checkAuth =
           ? authorization.split(" ")[1]
           : authorization);
 
+console.log("Cookie names:", Object.keys(req.cookies || {}));
+console.log("Authorization:", !!req.headers.authorization);
+
       if (!accessToken) {
         throw new AppError(401, "Authentication token missing");
       }
